@@ -5,8 +5,9 @@ var Schema = mongoose.Schema;
 var UserSchema = new Schema({
   name: { type: String, required: true, minLength: 2, maxLength: 180 },
   email: { type: String, required: true },
-  password: { required: true },
-  date_created: { type: Date },
+  password: { type: String },
+  date_created: { type: Date, required: true },
+  registered: { type: Boolean, required: true },
 });
 
 // Virtual for url
