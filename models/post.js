@@ -5,7 +5,7 @@ var Schema = mongoose.Schema;
 var PostSchema = new Schema({
   title: { type: String, required: true, minLength: 2, maxLength: 180 },
   contents: { type: String },
-  author: { type: Schema.Types.ObjectId, required: true },
+  author: { type: Schema.Types.ObjectId, required: true }, // Need to convert back to objectid
   date_created: { type: Date, required: true },
   last_modified: { type: Date, required: true },
   published: { type: Boolean, required: true },

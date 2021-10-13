@@ -8,6 +8,7 @@ var UserSchema = new Schema({
   password: { type: String },
   date_created: { type: Date, required: true },
   registered: { type: Boolean, required: true },
+  last_modified: { type: Date, required: true },
 });
 
 // Virtual for url

@@ -3,7 +3,6 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var CommentSchema = new Schema({
-  name: { type: String, required: true, minLength: 2, maxLength: 180 },
   user: { type: Schema.Types.ObjectId, required: true },
   content: { type: String, required: true },
   post: { type: Schema.Types.ObjectId, required: true },
