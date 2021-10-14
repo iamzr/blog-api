@@ -5,7 +5,8 @@ var { body, validationResult } = require("express-validator");
 // Need to have a striction to only list those that are publihedW:
 
 exports.post_list = function (req, res, next) {
-  Post.find({}, "title author date_created")
+  Post.find({ published: true }, "title author date_created contents")
+    .populate("author")
     .sort({ date_created: 1 })
     .exec(function (err, post_list) {
       if (err) {
@@ -78,7 +79,7 @@ exports.post_get = async function (req, res, next) {
 
 exports.post_update = [
   body("title", "Title must not be empty").trim().escape(),
-  body("author", "Author must not be emoty")
+  body("author", "Author must not be empty")
     .trim()
     .isLength({ min: 1 })
     .escape(),
