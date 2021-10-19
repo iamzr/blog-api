@@ -3,9 +3,9 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var CommentSchema = new Schema({
-  user: { type: Schema.Types.ObjectId, required: true },
+	user: { type: Schema.Types.ObjectId, ref: "User",  required: true },
   content: { type: String, required: true },
-  post: { type: Schema.Types.ObjectId, required: true },
+  post: { type: Schema.Types.ObjectId, ref:"Post",  required: true },
   date_created: { type: Date, required: true },
   last_modified: { type: Date, required: true },
   anon: { type: Boolean, required: true }, // Does this person want this to be posted anonymously

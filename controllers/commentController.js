@@ -5,19 +5,31 @@ var { body, validationResult } = require("express-validator");
 // Need to have a striction to only list those that are publihedW:
 
 exports.comment_list = function (req, res, next) {
-  Comment.find({}, "user content post date_created anon")
+  Comment.find({post: req.params.postid}, "user content date_created anon")
     .sort({ date_created: 1 })
-    .populate("user")
-    .populate("post")
+    .populate("user", "name")
+	.lean()
     .exec(function (err, comment_list) {
       if (err) {
         return next(err);
       }
-      // comment_list.forEach((comment) => {
-      //   if (comment.anon) {
-      //     console.log("anoned");
-      //     comment.user = "";
-      //   }
+	
+    //  comment_list.map((comment) => {
+    //       temp = Object.assign({}, comment.toObject())
+    //       console.log(temp)
+    //     if (temp.anon) {
+    //       temp.user = "Anon"
+    //       console.log(temp.user)
+    //       return temp
+    //     }})
+	for (const comment of comment_list) {
+		if (comment.anon) {
+			comment.user = "Anon"
+			console.log(comment.user)
+		} else {
+			comment.user = comment.user.name
+		}
+	}
       res.json({ comment_list, msg: "all comments" });
     });
 };
