@@ -1,41 +1,44 @@
+var mongoose = require("mongoose");
 var Comment = require("../models/comment");
+var User = require("../models/user");
 var { body, validationResult } = require("express-validator");
 
 // Display all comments
 // Need to have a striction to only list those that are publihedW:
 
 exports.comment_list = function (req, res, next) {
-  Comment.find({post: req.params.postid}, "user content date_created anon")
+  Comment.find({ post: req.params.postid }, "user content date_created anon")
     .sort({ date_created: 1 })
     .populate("user", "name")
-	.lean()
+    .lean()
     .exec(function (err, comment_list) {
       if (err) {
         return next(err);
       }
-	
-    //  comment_list.map((comment) => {
-    //       temp = Object.assign({}, comment.toObject())
-    //       console.log(temp)
-    //     if (temp.anon) {
-    //       temp.user = "Anon"
-    //       console.log(temp.user)
-    //       return temp
-    //     }})
-	for (const comment of comment_list) {
-		if (comment.anon) {
-			comment.user = "Anon"
-			console.log(comment.user)
-		} else {
-			comment.user = comment.user.name
-		}
-	}
+
+      //  comment_list.map((comment) => {
+      //       temp = Object.assign({}, comment.toObject())
+      //       console.log(temp)
+      //     if (temp.anon) {
+      //       temp.user = "Anon"
+      //       console.log(temp.user)
+      //       return temp
+      //     }})
+      for (const comment of comment_list) {
+        if (comment.anon) {
+          comment.user = "Anon";
+          console.log(comment.user);
+        } else {
+          comment.user = comment.user.name;
+        }
+      }
       res.json({ comment_list, msg: "all comments" });
     });
 };
 
 exports.comment_create = [
-  body("user", "User must not be empty").trim().escape(),
+  body("name", "Name must not be empty").trim().escape(),
+  body("email", "Email must not be empty").trim().escape(),
   body("post", "Post must not be empty").trim().escape(),
   body("content", "Contents of the comment must not be empty").trim().escape(),
   body(
@@ -43,36 +46,78 @@ exports.comment_create = [
     "Need to specify if the user wants to be anonymous or not"
   ).escape(),
 
-  (req, res, next) => {
+  async (req, res, next) => {
     const errors = validationResult(req);
-
-    const { user, post, content, anon } = req.body;
+    const { name, email, post, content, anon } = req.body;
 
     const date = new Date();
-    var comment = new Comment({
-      user,
-      post,
-      content,
-      anon: !!anon,
-      date_created: date,
-      last_modified: date,
-    });
 
     if (!errors.isEmpty()) {
       // There are errors.
       res.json({
-        new: comment,
         data: req.body,
         errors: errors.array(),
       });
     } else {
-      comment.save(function (err) {
-        if (err) {
-          return next(err);
+      const user = await User.findOneAndUpdate(
+        { email },
+        {
+          name,
+          date_created: date,
+          last_modified: date,
+          registered: false,
+        },
+        {
+          new: true,
+          upsert: true,
         }
-        res.status(200).json({ msg: "comment saved" });
+      );
+
+      var comment = new Comment({
+        user: user._id,
+        post: mongoose.Types.ObjectId(post),
+        content,
+        anon: !!anon,
+        date_created: date,
+        last_modified: date,
       });
     }
+
+    //   User.findOne({ email }, function (err, user) {
+    //     if (err) {
+    //       console.log(err);
+    //     } else if (!user) {
+    //       var newUser = new User({
+    //         name,
+    //         email,
+    //         date_created: date,
+    //         last_modified: date,
+    //         registered: false,
+    //       });
+    //       newUser
+    //         .save()
+    //         .then((user) => {
+    //           comment["user"] = user._id;
+    //           console.log(user);
+    //         })
+    //         .catch((err) => {
+    //           if (err) {
+    //             return next(err);
+    //           }
+    //         });
+    //     } else {
+    //       console.log(["found it", user]);
+    //       comment["user"] = user._id;
+    //     }
+    //   });
+    // }
+
+    comment.save(function (err) {
+      if (err) {
+        next(err);
+      }
+    });
+    res.status(200).json({ msg: "comment saved" });
   },
 ];
 
