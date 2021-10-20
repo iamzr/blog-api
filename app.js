@@ -4,7 +4,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var passport = require("passport");
-var cors = require("cors")
+var cors = require("cors");
 require("dotenv").config();
 require("./passport");
 
@@ -14,7 +14,8 @@ var postsRouter = require("./routes/posts");
 var commentsRouter = require("./routes/comments");
 var usersRouter = require("./routes/users");
 var secureRouter = require("./routes/secure-routes");
-
+var compression = require("compression");
+var helmet = require("helmet");
 var app = express();
 
 // Set up mongoose connection
@@ -26,6 +27,11 @@ db.on("error", console.error.bind(console, "MongoDB connection error"));
 
 // Set up cors
 app.use(cors());
+
+// Compress all routers
+app.use(compression());
+
+app.use(helmet());
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
