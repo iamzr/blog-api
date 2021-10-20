@@ -39,7 +39,6 @@ exports.comment_list = function (req, res, next) {
 exports.comment_create = [
   body("name", "Name must not be empty").trim().escape(),
   body("email", "Email must not be empty").trim().escape(),
-  body("post", "Post must not be empty").trim().escape(),
   body("content", "Contents of the comment must not be empty").trim().escape(),
   body(
     "anon",
@@ -48,9 +47,10 @@ exports.comment_create = [
 
   async (req, res, next) => {
     const errors = validationResult(req);
-    const { name, email, post, content, anon } = req.body;
+    const { name, email, content, anon } = req.body;
 
     const date = new Date();
+    const post = req.params.postid;
 
     if (!errors.isEmpty()) {
       // There are errors.
