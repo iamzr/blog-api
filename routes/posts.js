@@ -13,7 +13,7 @@ router.get("/posts", postController.post_list);
 // Create new post
 router.post(
   "/posts",
-  passport.authenticate("jwt", { session: false }),
+  // passport.authenticate("jwt", { session: false }),
   postController.post_create
 );
 
