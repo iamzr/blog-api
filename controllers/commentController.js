@@ -83,41 +83,12 @@ exports.comment_create = [
       });
     }
 
-    //   User.findOne({ email }, function (err, user) {
-    //     if (err) {
-    //       console.log(err);
-    //     } else if (!user) {
-    //       var newUser = new User({
-    //         name,
-    //         email,
-    //         date_created: date,
-    //         last_modified: date,
-    //         registered: false,
-    //       });
-    //       newUser
-    //         .save()
-    //         .then((user) => {
-    //           comment["user"] = user._id;
-    //           console.log(user);
-    //         })
-    //         .catch((err) => {
-    //           if (err) {
-    //             return next(err);
-    //           }
-    //         });
-    //     } else {
-    //       console.log(["found it", user]);
-    //       comment["user"] = user._id;
-    //     }
-    //   });
-    // }
-
     comment.save(function (err) {
       if (err) {
         next(err);
       }
+      res.status(200).json({ msg: "comment saved" });
     });
-    res.status(200).json({ msg: "comment saved" });
   },
 ];
 
