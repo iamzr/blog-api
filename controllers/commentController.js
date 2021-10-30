@@ -40,14 +40,12 @@ exports.comment_create = [
   body("name", "Name must not be empty").trim().escape(),
   body("email", "Email must not be empty").trim().escape(),
   body("content", "Contents of the comment must not be empty").trim().escape(),
-  body(
-    "anon",
-    "Need to specify if the user wants to be anonymous or not"
-  ).escape(),
+  body("anon", "Need to specify if the user wants to be anonymous or not"),
 
   async (req, res, next) => {
     const errors = validationResult(req);
     const { name, email, content, anon } = req.body;
+    console.log(anon);
 
     const date = new Date();
     const post = req.params.postid;
@@ -77,11 +75,12 @@ exports.comment_create = [
         user: user._id,
         post: mongoose.Types.ObjectId(post),
         content,
-        anon: !!anon,
+        anon: anon ? true : false,
         date_created: date,
         last_modified: date,
       });
     }
+    console.log(comment);
 
     comment.save(function (err) {
       if (err) {
